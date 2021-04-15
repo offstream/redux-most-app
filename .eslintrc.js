@@ -8,12 +8,9 @@ module.exports = {
     'no-autofix',
   ],
   'extends': [
-    // "eslint:recommended",
+    'eslint:recommended',
     './node_modules/sanctuary-style/eslint-es6.json',
   ],
-  'settings': {
-    'react': { 'version': 'detect' },
-  },
   'parserOptions': {
     'ecmaVersion': 12,
     'ecmaFeatures': {
