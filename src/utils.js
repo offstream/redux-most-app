@@ -13,6 +13,7 @@ export {
   flip,
   isFunction,
   isObject,
+  pipe,
 }
 
 export const nullary = f => () => f()

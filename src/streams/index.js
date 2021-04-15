@@ -1,5 +1,7 @@
 import { newDefaultScheduler } from '@most/scheduler'
 import {
+  constant,
+  debounce,
   filter,
   loop,
   map,
@@ -19,6 +21,8 @@ import { hold } from '@most/hold'
 import { compose, composeB1, flip } from '@app/utils'
 
 export {
+  constant,
+  debounce,
   filter,
   hold,
   map,
