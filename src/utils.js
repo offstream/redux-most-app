@@ -1,3 +1,4 @@
+import binary from 'crocks/helpers/binary'
 import compose from 'crocks/helpers/compose'
 import curry from 'crocks/helpers/curry'
 import flip from 'crocks/combinators/flip'
@@ -6,6 +7,7 @@ import isObject from 'crocks/predicates/isObject'
 import pipe from 'crocks/helpers/pipe'
 
 export {
+  binary,
   compose,
   curry,
   flip,
