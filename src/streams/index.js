@@ -1,10 +1,15 @@
 import { newDefaultScheduler } from '@most/scheduler'
 import {
+  filter,
   loop,
+  map,
+  mergeArray,
   runEffects,
   scan,
   skip,
   skipRepeatsWith,
+  snapshot,
+  switchLatest,
   tap,
 } from '@most/core'
 import { createAdapter } from '@most/adapter'
@@ -12,9 +17,16 @@ import { hold } from '@most/hold'
 import { compose, composeB1, flip } from '@app/utils'
 
 export {
+  filter,
   hold,
+  map,
+  mergeArray,
   scan,
+  snapshot,
+  switchLatest,
 }
+
+export { fromObservable } from './fromObservable'
 
 // scheduler :: MostDefaultScheduler
 export const scheduler = newDefaultScheduler()

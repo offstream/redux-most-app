@@ -9,6 +9,7 @@ import {
   skipRepeats,
 } from '@app/streams'
 import { $$observable, isObject, nullary, piped } from '@app/utils'
+import { STATE_STREAM_SYMBOL } from './redux-most/constants'
 
 export { default as applyMiddleware } from './applyMiddleware'
 
@@ -107,6 +108,7 @@ const create = (reducer, initial) => {
     onChange,
     action$,
     state$,
+    [STATE_STREAM_SYMBOL]: state$,
     change$,
   }
 }
