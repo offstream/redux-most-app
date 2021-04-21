@@ -4,6 +4,8 @@
 //   - timetraveling
 //   - reseting the state
 //   - "commit"
+// This should work with ay redux-like stores as long as `dispatch` and `getState`
+//   is implemented by the store
 // Also note that this Redux Store Enhancer MUST execute first if composing enhacers
 
 const IS_DEV_ENV = (function() {
