@@ -10,13 +10,13 @@ import { flip, pipe } from '@app/utils'
 const watchINC = pipe(
   select('INC'),
   debounce(500),
-  constant({ type: 'LOG', payload: 'INCREASED!' })
+  constant(() => console.log('INCREASED!'))
 )
 
 const watchDEC = pipe(
   select('DEC'),
   debounce(500),
-  constant({ type: 'LOG', payload: 'DECREASED!' })
+  constant(() => console.log('DECREASED!'))
 )
 
 const fizz = flip(state$ => pipe(

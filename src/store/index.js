@@ -1,4 +1,4 @@
-import createStore from '@app/createStore'
+import createStore, { applyMiddleware } from '@app/createStore'
 import {
   createEpicMiddleware,
   createStateStreamEnhancer,
@@ -7,6 +7,8 @@ import { compose } from '@app/utils'
 
 import rootReducer from './reducer'
 import rootEpic from './epic'
+import { createThunkMiddlleware } from '@app/createStore/middleware'
+import devtoolEnhancer from '@app/createStore/devtools'
 
 const initialState = {
   count: 0,
@@ -19,5 +21,9 @@ const createEpicEhancer = compose(createStateStreamEnhancer, createEpicMiddlewar
 export default createStore(
   rootReducer,
   initialState,
-  createEpicEhancer(rootEpic)
+  compose(
+    createEpicEhancer(rootEpic), // needs to execute AFTER applyMiddleware
+    applyMiddleware(createThunkMiddlleware()),
+    devtoolEnhancer() // needs to execute FIRST
+  )
 )
