@@ -1,12 +1,22 @@
-const FLNAMES = { map: 'fantasy-land/map' }
+import {
+  // combinators
+  B, C,
+  // pointfree
+  map,
+  // predicates
+  eachSatisfy, includes, propSatisfies, satisfiesAll,
+  isAsync, isFunction, isFunctor, isIterable, isObject, isString,
+} from '@app/utils'
 
-const isFunction = x => typeof x === 'function'
-const isIterable = x => isFunction(x[Symbol.iterator])
-const isFunctor = x => isFunction(x[FLNAMES.map]) || isFunction(x.map)
-const isAsync = x => isFunction(x.fork)
+// isValidFSAKey :: a -> Boolean
+const isValidFSAKey = C(includes, [ 'type', 'payload', 'error', 'meta' ])
 
-const dot = (f, g) => x => f(g(x))
-const map = f => x => x[FLNAMES.map] ? x[FLNAMES.map](f) : x.map(f)
+// isFSA :: a -> Boolean
+const isFSA = satisfiesAll([
+  isObject,
+  propSatisfies('type', isString),
+  B(eachSatisfy(isValidFSAKey), Object.keys),
+])
 
 export function multiMiddleware({ dispatch }) {
   return next => action => {
@@ -22,8 +32,13 @@ export function functorMiddleware({ dispatch }) {
 
 export function createIoMiddleware(name) {
   const isIO = x => isFunction(x[name])
+  const runIO = m => m[name]()
   return ({ dispatch }) => next => action => {
-    isIO(action) ? dispatch(action[name]()) : next(action)
+    isIO(action)
+      ? dispatch(runIO(action))
+      : isFSA(action) && isIO(action.payload)
+      ? dispatch({ ...action, payload: runIO(action.payload) })
+      : next(action)
   }
 }
 
@@ -37,9 +52,17 @@ export const asyncErrAction = payload => ({
 
 export function asyncMiddleware({ dispatch }) {
   return next => action => {
+    const errHandler = err =>
+      isString(err.type) ? dispatch({ ...err, error: true })
+                         : next(asyncErrAction(err))
     isAsync(action)
-    ? action.fork(dot(next, asyncErrAction), dispatch)
-    : next(action)
+      ? action.fork(errHandler, dispatch)
+      : isFSA(action) && isAsync(action.payload)
+      ? action.payload.fork(
+          err => dispatch({ ...action, payload: err, error: true }),
+          payload => dispatch({ ...action, payload })
+        )
+      : next(action)
   }
 }
 
@@ -49,13 +72,38 @@ export function createWhenMiddleware(pred, then) {
   }
 }
 
-export function createThunkMiddlleware(extraArg) {
+export function createThunkMiddleware(extraArg) {
   return createWhenMiddleware(
     isFunction,
     ({ dispatch, getState }) => _ => action => {
       action(dispatch, getState, extraArg)
     }
   )
+}
+
+export const THUNK_ERROR = 'asyncMiddleware/THUNK_ERROR'
+
+export const thunkErrAction = payload => ({
+  type: THUNK_ERROR,
+  payload,
+  error: true,
+})
+
+export function safeThunkMiddleware({ dispatch, getState }) {
+  return next => action => {
+    const tryThunk = thunk => {
+      try {
+        thunk(dispatch, getState)
+      } catch (e) {
+        next(thunkErrAction(e))
+      }
+    }
+    isFunction(action)
+      ? tryThunk(action)
+      : isFSA(action) && isFunction(action.payload)
+      ? tryThunk(action.payload)
+      : next(action)
+  }
 }
 
 export const loggerMiddleware = store => next => action => {

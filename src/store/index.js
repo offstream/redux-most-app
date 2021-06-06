@@ -7,7 +7,7 @@ import { compose } from '@app/utils'
 
 import rootReducer from './reducer'
 import rootEpic from './epic'
-import { createThunkMiddlleware } from '@app/createStore/middleware'
+import { createThunkMiddleware } from '@app/createStore/middleware'
 import devtoolEnhancer from '@app/createStore/devtools'
 
 const initialState = {
@@ -23,7 +23,7 @@ export default createStore(
   initialState,
   compose(
     createEpicEhancer(rootEpic), // needs to execute AFTER applyMiddleware
-    applyMiddleware(createThunkMiddlleware()),
+    applyMiddleware(createThunkMiddleware()),
     devtoolEnhancer() // needs to execute FIRST
   )
 )

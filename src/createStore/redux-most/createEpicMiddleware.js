@@ -9,7 +9,7 @@ import { STATE_STREAM_SYMBOL } from './constants'
 export const createEpicMiddleware = epic => {
   if (!isFunction(epic)) {
     throw new TypeError(
-      'createEpicMiddleware: Epic (a function) reqiured for the first arg.'
+      'createEpicMiddleware: Epic (a function) required for the first arg.'
     )
   }
 
